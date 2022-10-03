@@ -62,7 +62,13 @@ const holdScore = function () {
   let active = players[activePlayer];
   active.score += currentScore;
   active.scoreElement.textContent = active.score;
-  switchActivePlayer();
+
+  if (active.score >= 100) {
+    active.playerElement.classList.toggle('player--active');
+    active.playerElement.classList.toggle('player--winner');
+  } else {
+    switchActivePlayer();
+  }
 };
 
 const startNewGame = function () {
@@ -71,6 +77,7 @@ const startNewGame = function () {
     player.scoreElement.textContent = 0;
     player.currentElement.textContent = 0;
     player.playerElement.classList.remove('player--active');
+    player.playerElement.classList.remove('player--winner');
   });
 
   currentScore = 0;
