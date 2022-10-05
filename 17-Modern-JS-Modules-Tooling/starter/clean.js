@@ -1,4 +1,6 @@
-var budget = [
+'use strict';
+
+const budget = Object.freeze([
   { value: 250, description: 'Sold old TV 📺', user: 'jonas' },
   { value: -45, description: 'Groceries 🥑', user: 'jonas' },
   { value: 3500, description: 'Monthly salary 👩‍💻', user: 'jonas' },
@@ -7,58 +9,83 @@ var budget = [
   { value: -20, description: 'Candy 🍭', user: 'matilda' },
   { value: -125, description: 'Toys 🚂', user: 'matilda' },
   { value: -1800, description: 'New Laptop 💻', user: 'jonas' },
-];
+]);
 
-var limits = {
+const spendingLimits = Object.freeze({
   jonas: 1500,
   matilda: 100,
+});
+
+/**
+ * Adds purchase to budget if value of purchase is smaller than limit for user
+ * @param {number} purchaseValue
+ * @param {string} description
+ * @param {string} user
+ * @returns {object[]}
+ */
+const addPurchase = function (
+  budget,
+  limits,
+  purchaseValue,
+  description,
+  user = 'jonas'
+) {
+  const cleanUser = user.toLowerCase();
+  const userLimit = limits[cleanUser] ?? 0;
+
+  return purchaseValue <= userLimit
+    ? [...budget, { value: -purchaseValue, description, user }]
+    : budget;
 };
 
-var add = function (value, description, user) {
-  if (!user) user = 'jonas';
-  user = user.toLowerCase();
+const newExpenses = [
+  { purchaseValue: 10, description: 'Pizza 🍕' },
+  { purchaseValue: 100, description: 'Going to movies 🍿', user: 'Matilda' },
+  { purchaseValue: 200, description: 'Stuff', user: 'Jay' },
+];
 
-  var lim;
-  if (limits[user]) {
-    lim = limits[user];
-  } else {
-    lim = 0;
-  }
+let newBudget = newExpenses.reduce(
+  (currentBudget, item) =>
+    addPurchase(
+      currentBudget,
+      spendingLimits,
+      item.purchaseValue,
+      item.description,
+      item?.user
+    ),
+  budget
+);
 
-  if (value <= lim) {
-    budget.push({ value: -value, description: description, user: user });
-  }
+console.log(newBudget);
+
+/**
+ * Returns a copy of budget with a flag assigned to all purchase that are over
+ * limit
+ * @param {object[]} budget
+ * @returns {object[]}
+ */
+const flagBigExpenses = function (budget) {
+  return budget.map(item => {
+    const userLimit = spendingLimits[item.user] ?? 0;
+    return item.value < -userLimit ? { ...item, flag: 'limit' } : item;
+  });
 };
-add(10, 'Pizza 🍕');
-add(100, 'Going to movies 🍿', 'Matilda');
-add(200, 'Stuff', 'Jay');
-console.log(budget);
 
-var check = function () {
-  for (var el of budget) {
-    var lim;
-    if (limits[el.user]) {
-      lim = limits[el.user];
-    } else {
-      lim = 0;
-    }
+console.log(flagBigExpenses(newBudget));
 
-    if (el.value < -lim) {
-      el.flag = 'limit';
-    }
-  }
-};
-check();
+/**
+ * Prints category emojis of purchases larger than bigPurchaseLimit as single
+ * string.
+ *
+ * @param {number} bigExpenseLimit
+ * @param {object[]} budget
+ */
+const printBigExpenseCategories = function (bigExpenseLimit, budget) {
+  const output = budget
+    .filter(item => item.value <= -bigExpenseLimit)
+    .map(item => item.description.slice(-2)) // Get category emoji (2 chars)
+    .join(' / ');
 
-console.log(budget);
-
-var bigExpenses = function (limit) {
-  var output = '';
-  for (var el of budget) {
-    if (el.value <= -limit) {
-      output += el.description.slice(-2) + ' / '; // Emojis are 2 chars
-    }
-  }
-  output = output.slice(0, -2); // Remove last '/ '
   console.log(output);
 };
+printBigExpenseCategories(100, budget);
