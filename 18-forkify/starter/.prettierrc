@@ -1,4 +1,7 @@
 {
   "singleQuote": true,
-  "arrowParens": "avoid"
+  "arrowParens": "avoid",
+  "importOrder": ["^components/(.*)$", "^[./]" ],
+  "importOrderSeparation": true, 
+  "importOrderSortSpecifiers": true 
 }

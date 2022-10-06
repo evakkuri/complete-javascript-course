@@ -1,0 +1,18 @@
+{
+  "name": "forkify",
+  "version": "1.0.0",
+  "description": "Forkify project",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "parcel index.html --open",
+    "build": "parcel build index.html"
+  },
+  "author": "Elias Vakkuri",
+  "license": "ISC",
+  "devDependencies": {
+    "@parcel/transformer-sass": "^2.7.0",
+    "@trivago/prettier-plugin-sort-imports": "^3.3.0",
+    "parcel": "^2.7.0",
+    "prettier": "^2.7.1"
+  }
+}
