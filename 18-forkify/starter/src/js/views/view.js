@@ -14,6 +14,35 @@ export default class View {
     this._parentElement.insertAdjacentHTML('afterbegin', markup);
   }
 
+  update(data) {
+    this._data = data;
+    const newMarkup = this._generateMarkup();
+    const newDOM = document.createRange().createContextualFragment(newMarkup);
+    const newElements = Array.from(newDOM.querySelectorAll('*'));
+    const currentElements = Array.from(
+      this._parentElement.querySelectorAll('*')
+    );
+
+    newElements.forEach((newEl, i) => {
+      const curEl = currentElements[i];
+
+      // Updates changed TEXT
+      if (
+        !newEl.isEqualNode(curEl) &&
+        newEl.firstChild?.nodeValue.trim() !== ''
+      ) {
+        curEl.textContent = newEl.textContent;
+      }
+
+      // Updates changed ATTRIBUTES
+      if (!newEl.isEqualNode(curEl)) {
+        Array.from(newEl.attributes).forEach(attr =>
+          curEl.setAttribute(attr.name, attr.value)
+        );
+      }
+    });
+  }
+
   _clear() {
     this._parentElement.innerHTML = '';
   }
@@ -31,7 +60,6 @@ export default class View {
   }
 
   renderError(message = this._errorMessage) {
-    console.log(`Rendering error ${this._errorMessage}`);
     const markup = `
       <div class="error">
         <div>
@@ -42,7 +70,6 @@ export default class View {
         <p>${message}</p>
       </div>
     `;
-    console.log(markup);
     this._clear();
     this._parentElement.insertAdjacentHTML('afterbegin', markup);
   }

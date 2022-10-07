@@ -13,6 +13,15 @@ class RecipeView extends View {
     );
   }
 
+  addHandlerUpdateServings(modifyServingsHandler) {
+    this._parentElement.addEventListener('click', function (e) {
+      const btn = e.target.closest('.btn--update-servings');
+      if (!btn) return;
+      const newServings = Number(btn.dataset.updateTo);
+      modifyServingsHandler(newServings);
+    });
+  }
+
   _generateMarkup() {
     return `
       <figure class="recipe__fig">
@@ -39,17 +48,23 @@ class RecipeView extends View {
             <use href="${icons}#icon-users"></use>
           </svg>
           <span class="recipe__info-data recipe__info-data--people">${
-            this._data.servings
+            this._data.currentServings
           }</span>
           <span class="recipe__info-text">servings</span>
 
           <div class="recipe__info-buttons">
-            <button class="btn--tiny btn--increase-servings">
+            <button class="btn--tiny btn--update-servings" data-update-to="${
+              this._data.currentServings > 1
+                ? this._data.currentServings - 1
+                : this._data.currentServings
+            }">
               <svg>
                 <use href="${icons}#icon-minus-circle"></use>
               </svg>
             </button>
-            <button class="btn--tiny btn--increase-servings">
+            <button class="btn--tiny btn--update-servings" data-update-to="${
+              this._data.currentServings + 1
+            }">
               <svg>
                 <use href="${icons}#icon-plus-circle"></use>
               </svg>
@@ -69,7 +84,7 @@ class RecipeView extends View {
       <div class="recipe__ingredients">
         <h2 class="heading--2">Recipe ingredients</h2>
         <ul class="recipe__ingredient-list">
-          ${this._data.ingredients
+          ${this._data.currentIngredients
             .map(ing => this._generateMarkupIngredient(ing))
             .join('')}
         </ul>
